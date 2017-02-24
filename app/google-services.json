@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "420260115273",
+    "firebase_url": "https://public-transport-assistant.firebaseio.com",
+    "project_id": "public-transport-assistant",
+    "storage_bucket": "public-transport-assistant.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:420260115273:android:e526472c0c49720b",
+        "android_client_info": {
+          "package_name": "com.example.sanderbrugge.publictransportassistant"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "420260115273-75ckdj7scdbidufio4m1pbl7pfcuoe0v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.sanderbrugge.publictransportassistant",
+            "certificate_hash": "82dae60589c470284c8bd3ba5fef43eaca975702"
+          }
+        },
+        {
+          "client_id": "420260115273-euttoc6f9iq2lgruuu155shkocdton9c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBGLe4ZRpt5a8WAX7gM7cTYLFYwXp8MLi4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "420260115273-euttoc6f9iq2lgruuu155shkocdton9c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
