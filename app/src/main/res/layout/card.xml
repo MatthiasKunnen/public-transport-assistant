@@ -1,54 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="60dp"
-    android:background="#EEEEEE"
-    android:layout_marginTop="2dp"
     android:layout_marginLeft="8dp"
-    android:layout_marginRight="8dp">
+    android:layout_marginRight="8dp"
+    android:layout_marginTop="2dp"
+    android:background="#EEEEEE">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
 
         <ImageView
             android:id="@+id/ivPassed"
-            android:layout_marginLeft="10dp"
-        android:layout_gravity="center"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:background="@drawable/ball_green"/>
+            android:layout_gravity="center"
+            android:layout_marginLeft="10dp"
+            android:background="@drawable/ball_green" />
+
         <TextView
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+            android:id="@+id/tvNummer"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
             android:layout_marginLeft="10dp"
             android:background="@drawable/border"
-            android:layout_gravity="center"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:id="@+id/tvNummer"/>
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Large" />
 
         <LinearLayout
-            android:layout_margin="10dp"
-            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/tvLijnBeschrijving"
                 android:layout_width="180dp"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"/>
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Large" />
+
             <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_gravity="end"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="end"
                 android:orientation="vertical">
-                <RadioButton android:id="@+id/radioHalte"
-                    android:layout_gravity="end"
+
+                <RadioButton
+                    android:id="@+id/radioHalte"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end" />
             </RadioGroup>
 
         </LinearLayout>

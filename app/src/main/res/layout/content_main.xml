@@ -1,32 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
     <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:background="@android:color/holo_blue_dark">
+        android:background="@android:color/holo_blue_dark"
+        android:orientation="horizontal">
 
         <TableRow
-            android:layout_marginTop="16dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView android:layout_height="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp">
+
+            <TextView
+                android:id="@+id/txtTotalAmt"
                 android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:paddingLeft="20dp"
                 android:text="@string/lblLijn"
-                android:id="@+id/txtTotalAmt"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large">
-            </TextView>
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"></TextView>
         </TableRow>
-            <android.support.v7.widget.RecyclerView
-                android:layout_marginTop="16dp"
-                android:id="@+id/rvHaltes"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-            </android.support.v7.widget.RecyclerView>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rvHaltes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"></android.support.v7.widget.RecyclerView>
 
 
     </TableLayout>

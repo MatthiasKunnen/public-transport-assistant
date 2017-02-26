@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.sanderbrugge.publictransportassistant">
+
     <uses-permission android:name="android.permission.NFC" />
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
 
     <!--enkel voor telefoons met NFC beschikbaar-->
@@ -23,10 +24,9 @@
             </intent-filter>
 
         </activity>
-        <service
-            android:name=".model.FirebaseImpl">
+        <service android:name=".model.FirebaseImpl">
             <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
     </application>

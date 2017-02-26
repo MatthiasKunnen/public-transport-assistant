@@ -1,8 +1,6 @@
 package com.example.sanderbrugge.publictransportassistant.adapter;
 
 import android.content.Context;
-import android.media.Image;
-import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -12,11 +10,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.sanderbrugge.publictransportassistant.R;
 import com.example.sanderbrugge.publictransportassistant.model.GetJSON;
-import com.example.sanderbrugge.publictransportassistant.model.MainActivity;
 import com.example.sanderbrugge.publictransportassistant.model.Stop;
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
@@ -26,25 +22,19 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
-
-/**
- * Created by sanderbrugge on 23/02/17.
- */
 
 public class HalteAdapter extends RecyclerView.Adapter<HalteAdapter.PostViewHolder> {
 
     private static final String TAG = "HalteAdapter";
-    private ArrayList<Stop> bussen;
     private static final String url = "https://sd4u.be/en-GB/ip-project/api/?action=subscribe&subscriptionId=";
+    private ArrayList<Stop> stops;
 
-    public HalteAdapter(ArrayList<Stop> bussen) {
-        this.bussen = bussen;
-        Log.i(TAG, "adapter heeft: " + bussen.size() + " items");
+    public HalteAdapter(ArrayList<Stop> stops) {
+        this.stops = stops;
+        Log.i(TAG, "adapter heeft: " + stops.size() + " items");
     }
 
     @Override
@@ -58,28 +48,28 @@ public class HalteAdapter extends RecyclerView.Adapter<HalteAdapter.PostViewHold
     public void onBindViewHolder(PostViewHolder holder, int position) {
 
         Log.i(TAG, "in onBindViewHolder");
-        Log.i(TAG, String.format("%d", bussen.get(position).getVehicleId()));
 
-        String nummer = String.format("%d", bussen.get(position).getVehicleId());
+        String routeName = stops.get(position).getRouteName();
+        Log.i(TAG, routeName);
+
         TextView lijnnr = holder.lijnnr;
         TextView omschrijving = holder.omschrijving;
         ImageView ivPassed = holder.ivPassed;
         Context context = holder.ivPassed.getContext();
-        if (bussen.get(position).getArrived_on() != null) {
+        if (stops.get(position).getArrived_on() != null) {
             Picasso.with(context).load(R.drawable.red_ball).into(ivPassed);
             holder.isPassed = true;
         }
-        Log.i(TAG,"test "+ String.valueOf(holder.isPassed));
-        holder.subscriptionId = bussen.get(position).getSubscriptionId();
+        Log.i(TAG, "test " + String.valueOf(holder.isPassed));
+        holder.subscriptionId = stops.get(position).getSubscriptionId();
 
-        lijnnr.setText(nummer);
-        omschrijving.setText(bussen.get(position).getStopName());
-
+        lijnnr.setText(routeName);
+        omschrijving.setText(stops.get(position).getStopName());
     }
 
     @Override
     public int getItemCount() {
-        return bussen.size();
+        return stops.size();
     }
 
     public static class PostViewHolder extends RecyclerView.ViewHolder {
@@ -115,7 +105,6 @@ public class HalteAdapter extends RecyclerView.Adapter<HalteAdapter.PostViewHold
                 });
         }
 
-
         private class subscriptionIdAsync extends AsyncTask<String, Void, GetJSON> {
 
             private GetJSON res;
@@ -134,7 +123,6 @@ public class HalteAdapter extends RecyclerView.Adapter<HalteAdapter.PostViewHold
                     String responseJson = response.body().string();
                     Log.i(TAG, responseJson);
 
-
                     res = new Gson().fromJson(responseJson, GetJSON.class);
 
                     Log.i(TAG, "winner winner ");
@@ -143,11 +131,7 @@ public class HalteAdapter extends RecyclerView.Adapter<HalteAdapter.PostViewHold
                 }
 
                 return res;
-
             }
-
-
         }
     }
-
 }

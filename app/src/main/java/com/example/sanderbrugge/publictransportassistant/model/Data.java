@@ -2,10 +2,6 @@ package com.example.sanderbrugge.publictransportassistant.model;
 
 import java.util.ArrayList;
 
-/**
- * Created by sanderbrugge on 23/02/17.
- */
-
 public class Data {
     private ArrayList<Stop> stops;
 

@@ -5,82 +5,77 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.Ndef;
 import android.os.AsyncTask;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.RadioButton;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.sanderbrugge.publictransportassistant.R;
 import com.example.sanderbrugge.publictransportassistant.adapter.HalteAdapter;
-import com.example.sanderbrugge.publictransportassistant.persistentie.BusMapper;
+import com.example.sanderbrugge.publictransportassistant.persistentie.VehicleMapper;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
-import org.json.JSONObject;
-
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String TAG = "MainActivity";
     public static final MediaType JSON
             = MediaType.parse("application/json; charset=utf-8");
-
-    OkHttpClient client = new OkHttpClient();
-
-
-
     public static final String MIME_TEXT_PLAIN = "text/plain";
-
-
+    private static final String TAG = "MainActivity";
+    OkHttpClient client = new OkHttpClient();
+    OnPostSelectedListener mCallback;
     private NfcAdapter mNfcAdapter;
     private LinearLayoutManager llm;
     private RecyclerView rvHaltes;
-    private BusMapper bm;
+    private VehicleMapper bm;
     private GetJSON data;
     private HalteAdapter adapter;
     private int clickedIndex;
-    OnPostSelectedListener mCallback;
     private ArrayList<Stop> stops;
 
+    /**
+     * @param activity The corresponding {@link Activity} requesting the foreground dispatch.
+     * @param adapter  The {@link NfcAdapter} used for the foreground dispatch.
+     */
+    public static void setupForegroundDispatch(final Activity activity, NfcAdapter adapter) {
+        Log.i(TAG, "in setupForegroundDispatch");
+        final Intent intent = new Intent(activity.getApplicationContext(), activity.getClass());
+        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
+        final PendingIntent pendingIntent = PendingIntent.getActivity(activity.getApplicationContext(), 0, intent, 0);
 
-    public interface OnPostSelectedListener {
-        void onArticleSelected(int position,ArrayList<Stop> Stopsen);
-        ArrayList<Stop> getStopsen();
+        IntentFilter[] filters = new IntentFilter[1];
+        String[][] techList = new String[][]{};
+
+        adapter.enableForegroundDispatch(activity, pendingIntent, null, null);
+    }
+
+    public static void stopForegroundDispatch(final Activity activity, NfcAdapter adapter) {
+        adapter.disableForegroundDispatch(activity);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        bm = new BusMapper();
-       //data = bm.getBussen();
+        bm = new VehicleMapper();
+        //data = bm.getStops();
         stops = new ArrayList<>();
         rvHaltes = (RecyclerView) findViewById(R.id.rvHaltes);
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
@@ -94,25 +89,25 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (!mNfcAdapter.isEnabled()) {
-            Toast.makeText(this, "NFC is disabled",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "NFC is disabled", Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(this,"NFC is enabled",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "NFC is enabled", Toast.LENGTH_SHORT).show();
         }
 
         handleIntent(getIntent());
         new OkHttpHandler().execute("https://sd4u.be/en-GB/ip-project/api/?action=get_stops&vehicleId=1");
 
 
-
         //rvHaltes.addItemDecoration(new DividerItemDecoration(this));
 
     }
-    private void setStops(ArrayList<Stop> stops){
+
+    private void setStops(ArrayList<Stop> stops) {
         this.stops = stops;
     }
 
-    private void refreshUI(){
-        llm  = new LinearLayoutManager(getBaseContext());
+    private void refreshUI() {
+        llm = new LinearLayoutManager(getBaseContext());
         rvHaltes.setLayoutManager(llm);
         adapter = new HalteAdapter(stops);
         rvHaltes.setAdapter(adapter);
@@ -149,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
          *
          * In our case this method gets called, when the user attaches a Tag to the device.
          */
-        Log.i(TAG,"in onNewIntent");
+        Log.i(TAG, "in onNewIntent");
         handleIntent(intent);
     }
 
@@ -158,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
         if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
 
             String type = intent.getType();
-            Log.i(TAG,type);
+            Log.i(TAG, type);
         } else if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
 
             // In case we would still use the Tech Discovered Intent
@@ -168,14 +163,21 @@ public class MainActivity extends AppCompatActivity {
 
             for (String tech : techList) {
                 if (searchedTech.equals(tech)) {
-                    Log.i(TAG,"tech disc " + tech.toString());
+                    Log.i(TAG, "tech disc " + tech.toString());
                     new NdefReaderTask().execute(tag);
                     break;
                 }
             }
         }
     }
-    private class MainOnclickListener implements View.OnClickListener{
+
+    public interface OnPostSelectedListener {
+        void onArticleSelected(int position, ArrayList<Stop> stops);
+
+        ArrayList<Stop> getStopsen();
+    }
+
+    private class MainOnclickListener implements View.OnClickListener {
 
         private final Context context;
 
@@ -186,34 +188,12 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             clickedIndex = rvHaltes.getChildAdapterPosition(v);
-            Log.i(TAG,"lengte array: " + stops.size());
+            Log.i(TAG, "lengte array: " + stops.size());
             ArrayList<Stop> posten = data.getData().getStops();
-            Log.i(TAG,"Clicked on : "+clickedIndex);
-            mCallback.onArticleSelected(clickedIndex,stops);
+            Log.i(TAG, "Clicked on : " + clickedIndex);
+            mCallback.onArticleSelected(clickedIndex, stops);
 
         }
-    }
-
-    /**
-     * @param activity The corresponding {@link Activity} requesting the foreground dispatch.
-     * @param adapter  The {@link NfcAdapter} used for the foreground dispatch.
-     */
-    public static void setupForegroundDispatch(final Activity activity, NfcAdapter adapter) {
-        Log.i(TAG,"in setupForegroundDispatch");
-        final Intent intent = new Intent(activity.getApplicationContext(), activity.getClass());
-        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
-        final PendingIntent pendingIntent = PendingIntent.getActivity(activity.getApplicationContext(), 0, intent, 0);
-
-        IntentFilter[] filters = new IntentFilter[1];
-        String[][] techList = new String[][]{};
-
-        adapter.enableForegroundDispatch(activity, pendingIntent, null, null);
-    }
-
-
-    public static void stopForegroundDispatch(final Activity activity, NfcAdapter adapter) {
-        adapter.disableForegroundDispatch(activity);
     }
 
     private class NdefReaderTask extends AsyncTask<Tag, Void, String> {
@@ -221,7 +201,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(Tag... params) {
             Tag tag = params[0];
-            Log.i(TAG,"in asycn doInBack");
+            Log.i(TAG, "in asycn doInBack");
             Ndef ndef = Ndef.get(tag);
             if (ndef == null) {
                 // NDEF is not supported by this Tag.
@@ -264,11 +244,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute (String result){
-            Log.i(TAG,"in async on post");
+        protected void onPostExecute(String result) {
+            Log.i(TAG, "in async on post");
             if (result != null) {
 
-                Log.i("onPost",result);
+                Log.i("onPost", result);
 
             }
         }
@@ -278,6 +258,7 @@ public class MainActivity extends AppCompatActivity {
         GetJSON res;
         OkHttpClient client = new OkHttpClient();
         private ArrayList<Stop> Stopsen = new ArrayList<>();
+
         @Override
         protected GetJSON doInBackground(String... params) {
 
@@ -288,13 +269,13 @@ public class MainActivity extends AppCompatActivity {
                         .url(url)
                         .build();
                 Response response = client.newCall(request).execute();
-                Log.i("DoInBG",response.toString());
+                Log.i("DoInBG", response.toString());
 
                 String responseJson = response.body().string();
-                Log.i(TAG,responseJson);
+                Log.i(TAG, responseJson);
 
 
-                res = new Gson().fromJson(responseJson,GetJSON.class);
+                res = new Gson().fromJson(responseJson, GetJSON.class);
 
                 Log.i(TAG, res.getData().getStops().get(0).getStopName());
 
@@ -309,20 +290,20 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(GetJSON res) {
             super.onPostExecute(res);
 
-            Log.i(TAG,"in onPost");
-            Log.i(TAG,res.getData().getStops().get(0).getStopName());
+            Log.i(TAG, "in onPost");
+            Log.i(TAG, res.getData().getStops().get(0).getStopName());
 
             try {
                 if (res != null) {
-                    Log.i(TAG,"--------------------------------");
-                   Log.i(TAG,"succes!");
+                    Log.i(TAG, "--------------------------------");
+                    Log.i(TAG, "succes!");
                     setStops(res.getData().getStops());
-                    Log.i(TAG,stops.get(0).getStopName());
+                    Log.i(TAG, stops.get(0).getStopName());
                     refreshUI();
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                Log.i(TAG,"no succes :(");
+                Log.i(TAG, "no succes :(");
             }
         }
     }
